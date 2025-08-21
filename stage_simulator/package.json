@@ -19,7 +19,8 @@
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.2",
     "tailwindcss": "^4.1.8",
-    "three": "^0.179.1"
+    "three": "^0.179.1",
+    "three-stdlib": "^2.36.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
