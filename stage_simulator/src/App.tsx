@@ -49,6 +49,23 @@ function App() {
 
         controls.target.copy(center);
         controls.update();
+
+        // モデル内のすべてのメッシュにシャドウを設定
+        model.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            // マテリアルがMeshBasicMaterialの場合、ライティングを受けるように変更
+            if (child.material && child.material instanceof THREE.MeshBasicMaterial) {
+              const basicMaterial = child.material as THREE.MeshBasicMaterial;
+              const lambertMaterial = new THREE.MeshLambertMaterial({
+                color: basicMaterial.color,
+                map: basicMaterial.map,
+              });
+              child.material = lambertMaterial;
+            }
+          }
+        });
       },
       (progress) => {
         const percent = Math.round((progress.loaded / progress.total) * 100);
@@ -64,6 +81,14 @@ function App() {
     const gridHelper = new THREE.GridHelper(50, 50, 0x888888, 0x444444);
     scene.add(gridHelper);
 
+    // 床として見えない平面を追加（シャドウを受けるため）
+    const floorGeometry = new THREE.PlaneGeometry(100, 100);
+    const floorMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
     // 座標系（軸）を追加
     const axesHelper = new THREE.AxesHelper(5);
     scene.add(axesHelper);
@@ -71,6 +96,42 @@ function App() {
     // カメラの初期位置
     camera.position.set(10, 10, 10);
     camera.lookAt(0, 0, 0);
+
+    // 照明を追加
+    // 環境光（全体的な明るさ）
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.8); // より明るく
+    scene.add(ambientLight);
+
+    // メインの方向性光源（太陽光のような光）
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    directionalLight.position.set(10, 20, 10);
+    directionalLight.castShadow = true;
+    
+    // シャドウの品質設定
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
+    directionalLight.shadow.camera.near = 0.1;
+    directionalLight.shadow.camera.far = 100;
+    directionalLight.shadow.camera.left = -50;
+    directionalLight.shadow.camera.right = 50;
+    directionalLight.shadow.camera.top = 50;
+    directionalLight.shadow.camera.bottom = -50;
+    scene.add(directionalLight);
+
+    // 補助光源（逆光を減らす）
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
+    fillLight.position.set(-10, 10, -10);
+    scene.add(fillLight);
+
+    // ポイントライト（舞台照明風）
+    const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+    pointLight.position.set(0, 15, 0);
+    pointLight.castShadow = true;
+    scene.add(pointLight);
+
+    // レンダラーでシャドウを有効化
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     // OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
