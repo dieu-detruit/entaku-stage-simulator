@@ -116,8 +116,9 @@ function App() {
     // ローカル原点を下端にするため、Z方向に高さの半分だけオフセット
     stageGeometry.translate(0, 0, 0.12); // Z方向（高さ方向）に移動
     
-    // ステージを指定位置に配置（右手系Z-up座標で (2, 3, 0)）
-    stage.position.set(2, 3, 0); // X=2（右）, Y=3（奥）, Z=0（床面）
+    // ステージの逆側の端が(3, 2, 0)に来るよう配置
+    // ステージサイズ3.6m × 3.6mなので、中心は(3+1.8, 2+1.8, 0) = (4.8, 3.8, 0)
+    stage.position.set(4.8, 3.8, 0); // 逆側の端が(3, 2, 0)になるよう中心を配置
     stage.castShadow = true;
     stage.receiveShadow = true;
     scene.add(stage);
@@ -129,14 +130,9 @@ function App() {
     // カメラの上方向をZ軸に設定（表示上の鉛直上方向）
     camera.up.set(0, 0, 1);
 
-    // 照明を追加
-    // 環境光（全体的な明るさ）
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.8); // より明るく
-    scene.add(ambientLight);
-
     // メインの方向性光源（太陽光のような光）
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    directionalLight.position.set(10, 20, 10); // Y-up: Y座標が高さ
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 10);
+    directionalLight.position.set(4, 4, 10); // 右手系Z-up: Z座標が高さ
     directionalLight.castShadow = true;
     
     // シャドウの品質設定
@@ -151,15 +147,9 @@ function App() {
     scene.add(directionalLight);
 
     // 補助光源（逆光を減らす）
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
-    fillLight.position.set(-10, 10, -10); // Y-up座標系に調整
+    const fillLight = new THREE.DirectionalLight(0xffffff, 8);
+    fillLight.position.set(-10, -10, 10); // 右手系Z-up: Z座標が高さ
     scene.add(fillLight);
-
-    // ポイントライト（舞台照明風）
-    const pointLight = new THREE.PointLight(0xffffff, 1, 100);
-    pointLight.position.set(0, 15, 0); // Y-up: 上方からの照明
-    pointLight.castShadow = true;
-    scene.add(pointLight);
 
     // レンダラーでシャドウを有効化
     renderer.shadowMap.enabled = true;
