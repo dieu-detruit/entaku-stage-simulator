@@ -14,15 +14,18 @@ function App() {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x333333);
     
+    // カメラのアスペクト比を3Dエリアに合わせる
+    const canvas3DWidth = window.innerWidth - 320;
+    const canvas3DHeight = window.innerHeight;
     const camera = new THREE.PerspectiveCamera(
       75,
-      window.innerWidth / window.innerHeight,
+      canvas3DWidth / canvas3DHeight,
       0.1,
       1000,
     );
     
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(canvas3DWidth, canvas3DHeight);
     mountRef.current.appendChild(renderer.domElement);
 
     // GLBファイルを読み込み
@@ -147,9 +150,11 @@ function App() {
 
     // リサイズ対応
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      const newCanvas3DWidth = window.innerWidth - 320;
+      const newCanvas3DHeight = window.innerHeight;
+      camera.aspect = newCanvas3DWidth / newCanvas3DHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(newCanvas3DWidth, newCanvas3DHeight);
     };
     window.addEventListener('resize', handleResize);
 
@@ -165,10 +170,109 @@ function App() {
   }, []);
 
   return (
-    <div className="w-full h-screen">
-      <div ref={mountRef} className="w-full h-full" />
-      <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-4 py-2 rounded pointer-events-none">
-        {loadingStatus}
+    <div className="w-full h-screen flex">
+      {/* 3D表示エリア（左側） */}
+      <div className="flex-1 relative">
+        <div ref={mountRef} className="w-full h-full" />
+        <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-4 py-2 rounded pointer-events-none">
+          {loadingStatus}
+        </div>
+      </div>
+      
+      {/* コントロールパネル（右側） */}
+      <div className="w-80 bg-gray-800 text-white p-4 overflow-y-auto">
+        <h2 className="text-xl font-bold mb-4">Stage Simulator</h2>
+        
+        {/* 照明コントロール */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-3">照明設定</h3>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-1">環境光の強度</label>
+              <input
+                type="range"
+                min="0"
+                max="2"
+                step="0.1"
+                defaultValue="0.8"
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">メイン光源の強度</label>
+              <input
+                type="range"
+                min="0"
+                max="3"
+                step="0.1"
+                defaultValue="1.2"
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">補助光源の強度</label>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                defaultValue="0.4"
+                className="w-full"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* カメラコントロール */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-3">カメラ設定</h3>
+          <div className="space-y-3">
+            <button className="w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+              カメラをリセット
+            </button>
+            <div>
+              <label className="block text-sm font-medium mb-1">視野角 (FOV)</label>
+              <input
+                type="range"
+                min="10"
+                max="120"
+                step="5"
+                defaultValue="75"
+                className="w-full"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* 表示設定 */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-3">表示設定</h3>
+          <div className="space-y-2">
+            <label className="flex items-center">
+              <input type="checkbox" defaultChecked className="mr-2" />
+              グリッドを表示
+            </label>
+            <label className="flex items-center">
+              <input type="checkbox" defaultChecked className="mr-2" />
+              座標軸を表示
+            </label>
+            <label className="flex items-center">
+              <input type="checkbox" defaultChecked className="mr-2" />
+              シャドウを表示
+            </label>
+          </div>
+        </div>
+
+        {/* 操作説明 */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-3">操作方法</h3>
+          <div className="text-sm space-y-1">
+            <div>• 左ドラッグ: 回転</div>
+            <div>• 右ドラッグ: パン</div>
+            <div>• ホイール: ズーム</div>
+            <div>• 矢印キー: 移動</div>
+          </div>
+        </div>
       </div>
     </div>
   );
