@@ -34,6 +34,9 @@ function App() {
       '/b1_theater.glb',
       (gltf) => {
         const model = gltf.scene;
+        
+        // GLBモデルを右手系Z-up座標系に変換
+        model.rotation.x = Math.PI / 2; // Y-up → Z-up変換
         scene.add(model);
         setLoadingStatus('読み込み完了');
 
@@ -42,13 +45,16 @@ function App() {
         const size = box.getSize(new THREE.Vector3()).length();
         const center = box.getCenter(new THREE.Vector3());
 
-        // カメラ位置を調整（より近い視点に）
+        // 表示上Z軸が上向きになるカメラ位置を調整
         const distance = size * 0.8;
         camera.position.copy(center);
-        camera.position.x += distance * 0.7;
-        camera.position.y += distance * 0.3;
-        camera.position.z += distance * 0.7;
+        camera.position.x += distance * 0.7; // X方向（右）
+        camera.position.y -= distance * 0.7; // Y方向（手前）
+        camera.position.z += distance * 0.3; // Z方向（上）
         camera.lookAt(center);
+        
+        // カメラの上方向を維持
+        camera.up.set(0, 0, 1);
 
         controls.target.copy(center);
         controls.update();
@@ -80,25 +86,48 @@ function App() {
       },
     );
 
-    // グリッドを追加（1m刻み、50x50m）
+    // グリッドをXY平面（Z=0の水平面）に配置
     const gridHelper = new THREE.GridHelper(50, 50, 0x888888, 0x444444);
+    // GridHelperはデフォルトでXZ平面なので、XY平面にするためX軸周りに90度回転
+    gridHelper.rotation.x = Math.PI / 2;
     scene.add(gridHelper);
 
-    // 床として見えない平面を追加（シャドウを受けるため）
+    // 床として見えない平面を追加（XY平面、Z=0）
     const floorGeometry = new THREE.PlaneGeometry(100, 100);
     const floorMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2;
+    // PlaneGeometryはデフォルトでXY平面なので、回転不要
     floor.receiveShadow = true;
     scene.add(floor);
 
-    // 座標系（軸）を追加
+    // 標準の軸ヘルパーを使用（右手系Z-upに対応）
     const axesHelper = new THREE.AxesHelper(5);
     scene.add(axesHelper);
 
-    // カメラの初期位置
-    camera.position.set(10, 10, 10);
+    // ステージを追加（右手系Z-up座標系で直接作成）
+    const stageGeometry = new THREE.BoxGeometry(3.6, 3.6, 0.24); // X=幅, Y=奥行き, Z=高さ
+    const stageMaterial = new THREE.MeshPhongMaterial({ 
+      color: 0xf8f8f8, // 白色
+      shininess: 30,   // 光沢
+      specular: 0x111111 // スペキュラー反射
+    });
+    const stage = new THREE.Mesh(stageGeometry, stageMaterial);
+    
+    // ローカル原点を下端にするため、Z方向に高さの半分だけオフセット
+    stageGeometry.translate(0, 0, 0.12); // Z方向（高さ方向）に移動
+    
+    // ステージを指定位置に配置（右手系Z-up座標で (2, 3, 0)）
+    stage.position.set(2, 3, 0); // X=2（右）, Y=3（奥）, Z=0（床面）
+    stage.castShadow = true;
+    stage.receiveShadow = true;
+    scene.add(stage);
+
+    // カメラの初期位置（表示上でZ軸が上向きになるように）
+    camera.position.set(10, -10, 10); // 表示上: X=右、Y=手前、Z=上
     camera.lookAt(0, 0, 0);
+    
+    // カメラの上方向をZ軸に設定（表示上の鉛直上方向）
+    camera.up.set(0, 0, 1);
 
     // 照明を追加
     // 環境光（全体的な明るさ）
@@ -107,7 +136,7 @@ function App() {
 
     // メインの方向性光源（太陽光のような光）
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    directionalLight.position.set(10, 20, 10);
+    directionalLight.position.set(10, 20, 10); // Y-up: Y座標が高さ
     directionalLight.castShadow = true;
     
     // シャドウの品質設定
@@ -123,12 +152,12 @@ function App() {
 
     // 補助光源（逆光を減らす）
     const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
-    fillLight.position.set(-10, 10, -10);
+    fillLight.position.set(-10, 10, -10); // Y-up座標系に調整
     scene.add(fillLight);
 
     // ポイントライト（舞台照明風）
     const pointLight = new THREE.PointLight(0xffffff, 1, 100);
-    pointLight.position.set(0, 15, 0);
+    pointLight.position.set(0, 15, 0); // Y-up: 上方からの照明
     pointLight.castShadow = true;
     scene.add(pointLight);
 
@@ -136,9 +165,21 @@ function App() {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    // OrbitControls
+    // OrbitControls（標準的な設定で直感的に）
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    
+    // 標準的なマウス操作
+    controls.mouseButtons = {
+      LEFT: THREE.MOUSE.ROTATE,
+      MIDDLE: THREE.MOUSE.DOLLY,
+      RIGHT: THREE.MOUSE.PAN
+    };
+    
+    // 回転の制限を設定
+    controls.minPolarAngle = 0;
+    controls.maxPolarAngle = Math.PI;
 
     // アニメーションループ
     const animate = () => {
