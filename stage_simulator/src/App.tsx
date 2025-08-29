@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Scene3D } from './components/Scene3D';
 import { ControlPanel } from './components/ControlPanel';
+import { Scene3D } from './components/Scene3d';
 
 function App() {
   // 照明設定の状態
@@ -43,7 +43,7 @@ function App() {
         </div>
       </div>
 
-      {/* コントロールパネル（右側） */}
+      {/* コントロールiiパネル（右側） */}
       <ControlPanel
         ambientIntensity={ambientIntensity}
         mainLightIntensity={mainLightIntensity}
