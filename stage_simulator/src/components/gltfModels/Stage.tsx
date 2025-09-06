@@ -13,7 +13,7 @@ export function Stage() {
   return (
     <mesh
       ref={meshRef}
-      position={[6.8, 5.8, 0]}
+      position={[6.7, 5.7, 0]}
       castShadow
       receiveShadow
     >

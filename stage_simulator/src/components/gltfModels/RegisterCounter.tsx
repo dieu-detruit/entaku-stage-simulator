@@ -7,7 +7,7 @@ type RegisterCounterModelProps = Omit<GltfModelProps, "modelPath" | "position">;
 export function RegisterCounterModel(props: RegisterCounterModelProps) {
     return <GltfModel
         modelPath={GLTF_MODEL_PATHS.REGISTER_COUNTER}
-        position={[2.5, 5.3, 0.24]}
+        position={[3.2, 5.4, 0.24]}
         {...props}
     />
 }

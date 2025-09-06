@@ -8,8 +8,12 @@ import { TheaterModel } from './gltfModels/TheaterModel';
 import { TableModel } from './gltfModels/Table';
 import { RegisterCounterModel } from './gltfModels/RegisterCounter';
 import { ChairModel } from './gltfModels/Chair';
+import { RoomRunnerModel } from './gltfModels/RoomRunner';
+import { SCENES } from '../lib/scenes';
 
 interface Scene3dProps {
+  sceneName: string;
+
   // 照明設定
   ambientIntensity: number;
   mainLightIntensity: number;
@@ -28,6 +32,7 @@ interface Scene3dProps {
 }
 
 export function Scene3D({
+  sceneName,
   ambientIntensity,
   mainLightIntensity,
   fillLightIntensity,
@@ -37,12 +42,14 @@ export function Scene3D({
   fov,
   onLoadingProgress,
 }: Scene3dProps) {
+  const scene = SCENES[sceneName as keyof typeof SCENES] ?? SCENES.scene1;
+
   return (
     <Canvas
       camera={{
-        position: [10, -10, 10],
+        position: [0, 0, 2],
         fov: fov,
-        up: [0, 0, 1], // Z軸を上方向に設定
+        up: [0, 0, 1],
       }}
       shadows={showShadows}
       gl={{ antialias: true }}
@@ -63,22 +70,37 @@ export function Scene3D({
       {/* ステージ */}
       <Stage />
 
+      {/* 固定アイテム */}
       {/* レジカウンター */}
       <RegisterCounterModel onLoadingProgress={onLoadingProgress} />
 
+      {/* ルームランナー */}
+      <RoomRunnerModel onLoadingProgress={onLoadingProgress} />
+
+      {/* 可動アイテム */}
       {/* テーブル */}
       <TableModel
         onLoadingProgress={onLoadingProgress}
-        position={[3, 4, 0.24]}
+        position={[scene.table1.x, scene.table1.y, scene.table1.z]}
+        rotation={[Math.PI / 2, scene.table1.yaw, 0]}
       />
       <TableModel
         onLoadingProgress={onLoadingProgress}
-        position={[5, 2, 0.24]}
+        position={[scene.table2.x, scene.table2.y, scene.table2.z]}
+        rotation={[Math.PI / 2, scene.table2.yaw, 0]}
       />
 
       {/* 椅子 */}
-      <ChairModel onLoadingProgress={onLoadingProgress} position={[3, 4, 0.24]} />
-      <ChairModel onLoadingProgress={onLoadingProgress} position={[4, 3, 0.24]} />
+      <ChairModel
+        onLoadingProgress={onLoadingProgress}
+        position={[scene.chair1.x, scene.chair1.y, scene.chair1.z]}
+        rotation={[Math.PI / 2, scene.chair1.yaw, 0]}
+      />
+      <ChairModel
+        onLoadingProgress={onLoadingProgress}
+        position={[scene.chair2.x, scene.chair2.y, scene.chair2.z]}
+        rotation={[Math.PI / 2, scene.chair2.yaw, 0]}
+      />
 
       {/* ヘルパー要素 */}
       <SceneHelpers showGrid={showGrid} showAxes={showAxes} />
@@ -94,6 +116,7 @@ export function Scene3D({
           MIDDLE: 1, // DOLLY
           RIGHT: 2, // PAN
         }}
+        target={[3, 3, 2]}
       />
     </Canvas>
   );
