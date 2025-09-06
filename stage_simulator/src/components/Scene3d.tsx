@@ -3,13 +3,10 @@ import { Canvas, useThree } from '@react-three/fiber';
 import { useEffect } from 'react';
 import { Lights } from './Lights';
 import { SceneHelpers } from './SceneHelpers';
-import { Stage } from './gltfModels/Stage';
-import { PlantModel } from './gltfModels/PlantModel';
+import { StageModel } from './gltfModels/Stage';
 import { TheaterModel } from './gltfModels/TheaterModel';
 import { TableModel } from './gltfModels/Table';
-import { RegisterCounterModel } from './gltfModels/RegisterCounter';
 import { ChairModel } from './gltfModels/Chair';
-import { RoomRunnerModel } from './gltfModels/RoomRunner';
 import { SCENES } from '../lib/scenes';
 
 // レスポンシブカメラコンポーネント
@@ -104,17 +101,10 @@ export function Scene3D({
       {/* 3Dモデル */}
       <TheaterModel onLoadingProgress={onLoadingProgress} />
 
-      <PlantModel onLoadingProgress={onLoadingProgress} />
+
 
       {/* ステージ */}
-      <Stage />
-
-      {/* 固定アイテム */}
-      {/* レジカウンター */}
-      <RegisterCounterModel onLoadingProgress={onLoadingProgress} />
-
-      {/* ルームランナー */}
-      <RoomRunnerModel onLoadingProgress={onLoadingProgress} />
+      <StageModel onLoadingProgress={onLoadingProgress} />
 
       {/* 可動アイテム */}
       {/* テーブル */}
@@ -156,15 +146,18 @@ export function Scene3D({
           RIGHT: 2, // PAN
         }}
         touches={{
-          ONE: 0, // ROTATE
-          TWO: 1, // DOLLY_PAN
+          ONE: 0, // ROTATE (1本指でタッチドラッグ)
+          TWO: 1, // DOLLY_PAN (2本指でピンチズーム+パン)
         }}
         enableZoom={true}
         enablePan={true}
         enableRotate={true}
-        zoomSpeed={0.6}
+        zoomSpeed={1.2} // スマホでのピンチズームを少し速くする
         panSpeed={0.8}
         rotateSpeed={0.5}
+        // ズーム制限を設定（近すぎたり遠すぎたりしないように）
+        minDistance={2}
+        maxDistance={20}
         target={[4.5, 4.0, 1.5]}
       />
     </Canvas>
