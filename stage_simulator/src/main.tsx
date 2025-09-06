@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.tsx';
 import { preloadGltfModels } from './gltf/preload.ts';
+import './firebase.ts';
 
 preloadGltfModels();
 
