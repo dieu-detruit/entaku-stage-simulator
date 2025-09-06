@@ -1,7 +1,9 @@
-import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.tsx';
+import { preloadGltfModels } from './gltf/preload.ts';
+
+preloadGltfModels();
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
