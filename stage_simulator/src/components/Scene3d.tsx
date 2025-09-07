@@ -87,6 +87,13 @@ export function Scene3D({
       shadows={showShadows}
       gl={{ antialias: true }}
       style={{ background: '#333333' }}
+      onCreated={({ gl }) => {
+        const canvas = gl.domElement;
+        canvas.style.touchAction = "none";
+        canvas.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
+        canvas.addEventListener("touchmove", e => e.preventDefault(), { passive: false });
+        window.addEventListener("gesturestart", e => e.preventDefault());
+      }}
     >
       {/* レスポンシブカメラ */}
       <ResponsiveCamera />
