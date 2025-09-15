@@ -1,8 +1,9 @@
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import App from './App.tsx';
 import { preloadGltfModels } from './gltf/preload.ts';
 import './firebase.ts';
+import AppRouter from './AppRouter.tsx';
+import { BrowserRouter } from 'react-router-dom';
 
 preloadGltfModels();
 
@@ -11,4 +12,8 @@ if (!rootElement) {
   throw new Error('Root element not found');
 }
 
-createRoot(rootElement).render(<App />);
+createRoot(rootElement).render(
+  <BrowserRouter>
+    <AppRouter />
+  </BrowserRouter>
+);
