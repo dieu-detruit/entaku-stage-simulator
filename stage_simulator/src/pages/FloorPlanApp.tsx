@@ -22,7 +22,7 @@ export function FloorPlanApp() {
 
     return (
         <div className="w-full h-screen flex flex-col">
-            <div className="bg-gray-800 text-white p-3 flex items-center justify-between gap-4 flex-wrap">
+            <div className="bg-gray-800 text-white p-3 flex items-center justify-between gap-4 flex-wrap print:hidden">
                 <div className="flex items-center gap-4">
                     <h1 className="text-lg font-bold hidden sm:block">Floor Plan</h1>
                 </div>
@@ -46,7 +46,9 @@ export function FloorPlanApp() {
                 </div>
             </div>
 
-            <div className="flex-1 relative bg-gray-100">
+            <h1 className="text-2xl font-bold text-center hidden print:block mb-4">Stage Floor Plan</h1>
+
+            <div className="flex-1 relative bg-gray-100 print:bg-transparent">
                 <TheaterFloorPlan onDimensionsChange={handleTheaterDimensionsChange} />
                 {showStage && <StageFloorPlan
                     theaterDisplayDimensions={theaterDimensions.display}

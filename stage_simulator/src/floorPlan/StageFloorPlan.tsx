@@ -46,7 +46,6 @@ export function StageFloorPlan(
                     top: VIEWBOX_Y_OFFSET * pixelsPerMeter,
                     left: VIEWBOX_X_OFFSET * pixelsPerMeter,
                     zIndex: 10,
-                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
                 }}
             >
                 <title>Stage Floor Plan</title>
@@ -65,8 +64,8 @@ export function StageFloorPlan(
                         8.8,1.45
                         8.8,7.2
                         14.95,7.2
-                        14.95,8.8
-                        16.2,8.8
+                        14.95,7.8
+                        16.2,7.8
                         16.2,6.35
                         10.45,6.35
                         10.45,2.75
@@ -102,7 +101,7 @@ export function StageFloorPlan(
 
                 {/* 高さ表記 */}
                 <text x={11.6} y={3.4} fontSize="0.5" fill="#6B4F27" fontWeight="bold">
-                    +240
+                    +120
                 </text>
 
                 {/* パネル(シモ側) */}

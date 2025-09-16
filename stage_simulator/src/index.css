@@ -84,3 +84,75 @@ select:focus {
 .coral-glow:hover {
   box-shadow: 0 0 30px rgba(255, 107, 71, 0.3);
 }
+
+/* Print styles */
+@media print {
+  body {
+    overflow: visible;
+    background: white !important;
+    color: black !important;
+  }
+  
+  html {
+    overflow: visible;
+  }
+  
+  .page-break {
+    page-break-after: always;
+  }
+  
+  .page-break:last-child {
+    page-break-after: avoid;
+  }
+  
+  /* Ensure print elements are visible */
+  .print\:block {
+    display: block !important;
+  }
+  
+  .print\:hidden {
+    display: none !important;
+  }
+  
+  .hidden.print\:block {
+    display: block !important;
+  }
+  
+  /* Optimize print layout */
+  @page {
+    margin: 1cm;
+    size: A4;
+  }
+  
+  /* Ensure SVG elements print correctly */
+  svg {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  /* Force background colors and images to print */
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  /* Ensure stage floor plan container is visible in print */
+  .print-stage-container {
+    position: relative !important;
+    overflow: visible !important;
+  }
+  
+  .print-stage-container svg {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 10 !important;
+    background-color: transparent !important;
+  }
+  
+  /* Make sure all SVG elements and their children are visible */
+  svg, svg * {
+    visibility: visible !important;
+    display: block !important;
+  }
+}
