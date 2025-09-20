@@ -15,6 +15,7 @@ function App() {
   // 表示設定の状態
   const [showGrid, setShowGrid] = useState(true);
   const [showAxes, setShowAxes] = useState(true);
+  const [showBaton, setShowBaton] = useState(true);
 
   // ロード状態
   const [loadingStatus, setLoadingStatus] = useState('読み込み中...');
@@ -24,7 +25,7 @@ function App() {
       {/* 上部コントロールバー */}
       <div className="bg-gray-800 text-white p-3 flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-4">
-          <h1 className="text-lg font-bold hidden sm:block">Stage Simulator</h1>
+          <h1 className="text-lg font-bold hidden sm:block">ドーナツ・レース</h1>
           <select
             value={sceneName}
             onChange={(e) => setSceneName(e.target.value)}
@@ -37,6 +38,15 @@ function App() {
         </div>
 
         <div className="flex items-center gap-4 text-sm">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={showBaton}
+              onChange={(e) => setShowBaton(e.target.checked)}
+              className="w-4 h-4"
+            />
+            照明バトン
+          </label>
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -70,6 +80,7 @@ function App() {
           fillLightIntensity={0.4}
           showGrid={showGrid}
           showAxes={showAxes}
+          showBaton={showBaton}
           showShadows={true}
           fov={75}
           onLoadingProgress={setLoadingStatus}

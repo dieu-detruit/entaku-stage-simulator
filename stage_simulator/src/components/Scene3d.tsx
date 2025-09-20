@@ -7,6 +7,7 @@ import { StageModel } from './gltfModels/Stage';
 import { TheaterModel } from './gltfModels/TheaterModel';
 import { TableModel } from './gltfModels/Table';
 import { ChairModel } from './gltfModels/Chair';
+import { BatonModel } from './gltfModels/Baton';
 import { SCENES } from '../lib/scenes';
 
 // レスポンシブカメラコンポーネント
@@ -55,6 +56,7 @@ interface Scene3dProps {
   // 表示設定
   showGrid: boolean;
   showAxes: boolean;
+  showBaton: boolean;
   showShadows: boolean;
 
   // カメラ設定
@@ -71,6 +73,7 @@ export function Scene3D({
   fillLightIntensity,
   showGrid,
   showAxes,
+  showBaton,
   showShadows,
   fov,
   onLoadingProgress,
@@ -108,10 +111,11 @@ export function Scene3D({
       {/* 3Dモデル */}
       <TheaterModel onLoadingProgress={onLoadingProgress} />
 
-
-
       {/* ステージ */}
       <StageModel onLoadingProgress={onLoadingProgress} />
+
+      {/* バトン */}
+      {showBaton && <BatonModel onLoadingProgress={onLoadingProgress} />}
 
       {/* 可動アイテム */}
       {/* テーブル */}

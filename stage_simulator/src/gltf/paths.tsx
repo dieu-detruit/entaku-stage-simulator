@@ -7,4 +7,5 @@ export const GLTF_MODEL_PATHS = {
     STAGE: '/stage.glb',
     TABLE: '/table.glb',
     THEATER: '/b1_theater.glb',
+    BATON: '/baton.glb',
 }
