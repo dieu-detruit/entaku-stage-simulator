@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface TheaterFloorPlanProps {
     onDimensionsChange?: (dimensions: {
@@ -11,6 +11,14 @@ export function TheaterFloorPlan({ onDimensionsChange }: TheaterFloorPlanProps) 
     const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
     const [displayDimensions, setDisplayDimensions] = useState({ width: 0, height: 0 });
     const containerRef = useRef<HTMLDivElement>(null);
+
+    // Stable callback that doesn't change unless onDimensionsChange identity changes
+    const stableOnDimensionsChange = useCallback((dimensions: {
+        display: { width: number; height: number },
+        original: { width: number; height: number }
+    }) => {
+        onDimensionsChange?.(dimensions);
+    }, [onDimensionsChange]);
 
     useEffect(() => {
         // Load image to get natural dimensions
@@ -40,12 +48,10 @@ export function TheaterFloorPlan({ onDimensionsChange }: TheaterFloorPlanProps) 
             setDisplayDimensions({ width: displayWidth, height: displayHeight });
 
             // Notify parent component of dimension changes
-            if (onDimensionsChange) {
-                onDimensionsChange({
-                    display: { width: displayWidth, height: displayHeight },
-                    original: { width: imageDimensions.width, height: imageDimensions.height }
-                });
-            }
+            stableOnDimensionsChange({
+                display: { width: displayWidth, height: displayHeight },
+                original: { width: imageDimensions.width, height: imageDimensions.height }
+            });
         };
 
         updateDisplayDimensions();
@@ -55,7 +61,7 @@ export function TheaterFloorPlan({ onDimensionsChange }: TheaterFloorPlanProps) 
         window.addEventListener('resize', handleResize);
 
         return () => window.removeEventListener('resize', handleResize);
-    }, [imageDimensions, onDimensionsChange]);
+    }, [imageDimensions, stableOnDimensionsChange]);
 
     return (
         <div

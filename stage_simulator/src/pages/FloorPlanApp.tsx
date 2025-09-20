@@ -1,9 +1,36 @@
 import { useState } from "react";
 import { TheaterFloorPlan } from "../floorPlan/TheaterFloorPlan";
 import { StageFloorPlan } from "../floorPlan/StageFloorPlan";
+import { LightBatonFloorPlan } from "../floorPlan/LightBatonFloorPlan";
+
+function ToggleButton({
+    label, value, setValue
+}: {
+    label: string;
+    value: boolean;
+    setValue: (value: boolean) => void;
+}) {
+    return (
+        <label className="inline-flex items-center cursor-pointer">
+            <input
+                type="checkbox"
+                checked={value}
+                onChange={(e) => setValue(e.target.checked)}
+                className="sr-only"
+            />
+            <div className={`relative w-11 h-6 transition duration-200 ease-linear rounded-full ${value ? 'bg-blue-500' : 'bg-gray-400'}`}>
+                <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition duration-200 ease-linear transform ${value ? 'translate-x-5' : 'translate-x-0'}`} />
+            </div>
+            <span className="ml-3 text-sm font-medium text-white">
+                {label}
+            </span>
+        </label>
+    );
+}
 
 export function FloorPlanApp() {
     const [showStage, setShowStage] = useState(true);
+    const [showLightBaton, setShowLightBaton] = useState(false);
 
     const [theaterDimensions, setTheaterDimensions] = useState<{
         display: { width: number; height: number },
@@ -27,22 +54,8 @@ export function FloorPlanApp() {
                     <h1 className="text-lg font-bold hidden sm:block">Floor Plan</h1>
                 </div>
                 <div className="flex items-center gap-4">
-                    <label className="inline-flex items-center cursor-pointer">
-                        <input
-                            type="checkbox"
-                            checked={showStage}
-                            onChange={(e) => setShowStage(e.target.checked)}
-                            className="sr-only"
-                        />
-                        <div className={`relative w-11 h-6 transition duration-200 ease-linear rounded-full ${showStage ? 'bg-blue-500' : 'bg-gray-400'
-                            }`}>
-                            <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition duration-200 ease-linear transform ${showStage ? 'translate-x-5' : 'translate-x-0'
-                                }`} />
-                        </div>
-                        <span className="ml-3 text-sm font-medium text-white">
-                            Stage Display
-                        </span>
-                    </label>
+                    <ToggleButton label="舞台図" value={showStage} setValue={setShowStage} />
+                    <ToggleButton label="バトン図" value={showLightBaton} setValue={setShowLightBaton} />
                 </div>
             </div>
 
@@ -50,10 +63,15 @@ export function FloorPlanApp() {
 
             <div className="flex-1 relative bg-gray-100 print:bg-transparent">
                 <TheaterFloorPlan onDimensionsChange={handleTheaterDimensionsChange} />
-                {showStage && <StageFloorPlan
-                    theaterDisplayDimensions={theaterDimensions.display}
-                    theaterOriginalDimensions={theaterDimensions.original}
-                />}
+                {
+                    showStage && <StageFloorPlan
+                        theaterDisplayDimensions={theaterDimensions.display}
+                        theaterOriginalDimensions={theaterDimensions.original}
+                    />
+                }
+                {
+                    showLightBaton && <LightBatonFloorPlan theaterDisplayDimensions={theaterDimensions.display} />
+                }
             </div>
         </div>
     );
