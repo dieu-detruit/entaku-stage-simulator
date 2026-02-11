@@ -158,7 +158,7 @@ export function Scene3D({
         }}
         touches={{
           ONE: 0, // ROTATE (1本指でタッチドラッグ)
-          TWO: 1, // DOLLY_PAN (2本指でピンチズーム+パン)
+          TWO: 2, // DOLLY_PAN (2本指でピンチズーム+パン)
         }}
         enableZoom={true}
         enablePan={true}
